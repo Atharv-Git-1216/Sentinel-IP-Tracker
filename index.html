@@ -33,11 +33,12 @@
             align-items: center;
             margin: 0;
             min-height: 100vh;
-            overflow: hidden; /* Hide scrollbars during boot */
+            overflow: hidden; 
+            perspective: 1000px; 
         }
 
         /* =========================================
-           JARVIS BOOT SEQUENCE OVERLAY
+           COMBINED JARVIS BOOT OVERLAY
            ========================================= */
         #boot-screen {
             position: fixed;
@@ -49,57 +50,74 @@
             justify-content: center;
             align-items: center;
             transition: opacity 1s ease-out;
+            gap: 40px; /* Space between circle and terminal */
         }
 
+        /* The Glowing Center Circle */
+        .sentinel-circle {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 4px solid var(--neon-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 30px var(--neon-blue), inset 0 0 20px var(--neon-blue);
+            animation: pulseCircle 2s infinite;
+            position: relative;
+        }
+        
+        .sentinel-circle::after {
+            content: '';
+            position: absolute;
+            top: -12px; left: -12px; right: -12px; bottom: -12px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue-dim);
+            border-left-color: var(--danger-red); /* Adds the dual-color spin */
+            animation: spinReverse 2s linear infinite;
+        }
+
+        .sentinel-circle h3 {
+            color: var(--neon-blue);
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: pulseText 1.5s infinite;
+        }
+
+        /* The Typing Terminal Below */
         .terminal-container {
             width: 80%;
-            max-width: 800px;
+            max-width: 650px;
             color: var(--neon-blue);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-align: left;
+            min-height: 220px; /* Keeps the page from jumping while typing */
         }
 
         .terminal-line {
-            margin: 5px 0;
+            margin: 6px 0;
             opacity: 0;
+            text-shadow: 0 0 5px var(--neon-blue-dim);
         }
 
-        /* The glowing JARVIS core */
-        .core-loader {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--neon-blue);
-            border-bottom-color: var(--neon-blue);
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 30px;
-            position: relative;
-            box-shadow: 0 0 20px var(--neon-blue-dim);
-        }
-        .core-loader::after {
-            content: '';
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-left-color: var(--danger-red);
-            border-right-color: var(--danger-red);
-            animation: spin-reverse 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        @keyframes pulseCircle { 0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--neon-blue), inset 0 0 20px var(--neon-blue); } 50% { transform: scale(1.05); box-shadow: 0 0 45px var(--neon-blue), inset 0 0 25px var(--neon-blue); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes spinReverse { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
 
         /* =========================================
-           MAIN APP STYLES (Hidden initially)
+           MAIN APP STYLES 
            ========================================= */
         #main-app {
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.95) rotateX(2deg) translateY(-20px); 
             transition: all 1s ease-in-out;
             width: 100%;
             max-width: 650px;
-            display: none; /* Will be turned to block after boot */
+            display: none; 
+            perspective: 500px; 
         }
 
         .card { 
@@ -107,11 +125,24 @@
             padding: 2rem; 
             border-radius: 12px; 
             border: 1px solid rgba(0, 240, 255, 0.3); 
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2), inset 0 0 25px rgba(0, 240, 255, 0.1);
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(0, 240, 255, 0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline { 0% { transform: translateY(-100%) rotate(30deg); } 100% { transform: translateY(100%) rotate(30deg); } }
 
         h2 { color: var(--neon-blue); margin-top: 0; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }
         .input-group { display: flex; gap: 10px; margin-top: 20px; }
@@ -136,13 +167,14 @@
 
         #map { height: 350px; width: 100%; border-radius: 8px; margin-top: 20px; display: none; border: 1px solid #334155; filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(85%); }
         .pulse-text { animation: pulseText 1.5s ease-in-out infinite; }
-        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
 
     <div id="boot-screen">
-        <div class="core-loader"></div>
+        <div class="sentinel-circle">
+            <h3>SENTINEL AI<br>BOOTING UP</h3>
+        </div>
         <div class="terminal-container" id="terminal">
             </div>
     </div>
@@ -185,7 +217,7 @@
             const bootScreen = document.getElementById('boot-screen');
             const mainApp = document.getElementById('main-app');
 
-            // Type out each line with a slight delay
+            // Type out each line dynamically while the circle pulses
             for (let i = 0; i < bootSequence.length; i++) {
                 const line = document.createElement('div');
                 line.className = 'terminal-line';
@@ -195,35 +227,30 @@
                 // Fade in the line
                 setTimeout(() => line.style.opacity = '1', 50);
                 
-                // Wait between 200ms and 600ms before typing the next line
-                const delay = Math.random() * 400 + 200;
+                // Wait between 200ms and 500ms before typing the next line
+                const delay = Math.random() * 300 + 200;
                 await new Promise(r => setTimeout(r, delay));
             }
 
-            // Pause for cinematic effect
+            // Pause for cinematic effect after terminal finishes
             await new Promise(r => setTimeout(r, 800));
 
-            // Fade out the boot screen
+            // Fade out the entire boot screen
             bootScreen.style.opacity = '0';
             
             setTimeout(() => {
-                // Remove boot screen from document flow
                 bootScreen.style.display = 'none';
-                
-                // Show and animate in the main app
                 mainApp.style.display = 'block';
                 setTimeout(() => {
                     mainApp.style.opacity = '1';
-                    mainApp.style.transform = 'scale(1)';
+                    mainApp.style.transform = 'scale(1) rotateX(1deg) translateY(0px)'; 
                 }, 50);
-            }, 1000); // Wait for the 1s CSS fade transition
+            }, 1000); 
         }
 
-        // Run the boot sequence immediately when the page loads
         window.onload = runBootSequence;
 
-
-        // --- IP TRACKER LOGIC (Same as before) ---
+        // --- IP TRACKER LOGIC ---
         let ipMap = null;
         let mapMarker = null;
 
