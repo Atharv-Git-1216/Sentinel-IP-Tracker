@@ -22,84 +22,24 @@
         body { 
             font-family: 'JetBrains Mono', monospace; 
             background-color: var(--bg-color);
+            /* Animated Cyber Grid Background */
             background-image: 
                 linear-gradient(var(--neon-blue-dim) 1px, transparent 1px),
                 linear-gradient(90deg, var(--neon-blue-dim) 1px, transparent 1px);
             background-size: 30px 30px;
+            background-position: center;
             color: var(--text-main); 
-            padding: 0; 
+            padding: 2rem; 
             display: flex;
             justify-content: center;
-            align-items: center;
             margin: 0;
             min-height: 100vh;
-            overflow: hidden; /* Hide scrollbars during boot */
+            animation: gridMove 20s linear infinite;
         }
 
-        /* =========================================
-           JARVIS BOOT SEQUENCE OVERLAY
-           ========================================= */
-        #boot-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #02060d;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-out;
-        }
-
-        .terminal-container {
-            width: 80%;
-            max-width: 800px;
-            color: var(--neon-blue);
-            font-size: 0.9rem;
-            text-align: left;
-        }
-
-        .terminal-line {
-            margin: 5px 0;
-            opacity: 0;
-        }
-
-        /* The glowing JARVIS core */
-        .core-loader {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--neon-blue);
-            border-bottom-color: var(--neon-blue);
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 30px;
-            position: relative;
-            box-shadow: 0 0 20px var(--neon-blue-dim);
-        }
-        .core-loader::after {
-            content: '';
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-left-color: var(--danger-red);
-            border-right-color: var(--danger-red);
-            animation: spin-reverse 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-
-        /* =========================================
-           MAIN APP STYLES (Hidden initially)
-           ========================================= */
-        #main-app {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: all 1s ease-in-out;
-            width: 100%;
-            max-width: 650px;
-            display: none; /* Will be turned to block after boot */
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px 30px; }
         }
 
         .card { 
@@ -108,122 +48,146 @@
             border-radius: 12px; 
             border: 1px solid rgba(0, 240, 255, 0.3); 
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            width: 100%;
+            max-width: 650px;
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
         }
 
-        h2 { color: var(--neon-blue); margin-top: 0; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-blue); }
-        .input-group { display: flex; gap: 10px; margin-top: 20px; }
-        
-        input { 
-            flex-grow: 1; padding: 12px 15px; border-radius: 6px; border: 1px solid #334155; 
-            background: rgba(0,0,0,0.5); color: var(--neon-blue); font-family: 'JetBrains Mono', monospace; font-size: 1rem; outline: none;
+        /* Scanning Line Effect */
+        .card::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(0, 240, 255, 0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
         }
-        input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue-dim); }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%) rotate(30deg); }
+            100% { transform: translateY(100%) rotate(30deg); }
+        }
+
+        h2 { 
+            color: var(--neon-blue); 
+            margin-top: 0; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        input { 
+            flex-grow: 1;
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            border: 1px solid #334155; 
+            background: rgba(0,0,0,0.5); 
+            color: var(--neon-blue); 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue-dim);
+        }
 
         button { 
-            padding: 12px 24px; background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue);
-            border-radius: 6px; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; transition: all 0.2s ease;
+            padding: 12px 24px; 
+            background: transparent; 
+            color: var(--neon-blue); 
+            border: 1px solid var(--neon-blue);
+            border-radius: 6px;
+            cursor: pointer; 
+            font-weight: 800; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        button:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
 
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .data-box { background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 8px; border-left: 3px solid var(--neon-blue); font-size: 0.9rem; line-height: 1.6; }
+        button:hover { 
+            background: var(--neon-blue); 
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Loading Pulse Animation */
+        .pulse-text {
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .data-box { 
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 15px; 
+            border-radius: 8px; 
+            border-left: 3px solid var(--neon-blue);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
         .threat-box { border-left-color: var(--danger-red); }
+
         .highlight-blue { color: var(--neon-blue); font-weight: bold; }
         .highlight-red { color: var(--danger-red); font-weight: bold; text-shadow: 0 0 5px rgba(255, 42, 42, 0.5); }
 
-        #map { height: 350px; width: 100%; border-radius: 8px; margin-top: 20px; display: none; border: 1px solid #334155; filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(85%); }
-        .pulse-text { animation: pulseText 1.5s ease-in-out infinite; }
-        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        #map { 
+            height: 350px; 
+            width: 100%; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            display: none; 
+            border: 1px solid #334155;
+            filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(85%); /* Dark Mode Map Hack */
+        }
     </style>
 </head>
 <body>
 
-    <div id="boot-screen">
-        <div class="core-loader"></div>
-        <div class="terminal-container" id="terminal">
-            </div>
-    </div>
+    <div class="card">
+        <h2>🛰️ Phase 7: IP Reputation Engine</h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin: 0;">GLOBAL THREAT INTEL // ISOLATED MODULE // PORT: 5005</p>
+        
+        <div class="input-group">
+            <input type="text" id="ipInput" placeholder="Enter target IPv4 (e.g., 8.8.8.8)">
+            <button onclick="scanIP()" id="scanBtn">Execute Scan</button>
+        </div>
 
-    <div id="main-app">
-        <div class="card">
-            <h2>🛰️ Phase 7: IP Reputation Engine</h2>
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">GLOBAL THREAT INTEL // ISOLATED MODULE // PORT: 5005</p>
-            
-            <div class="input-group">
-                <input type="text" id="ipInput" placeholder="Enter target IPv4 (e.g., 8.8.8.8)">
-                <button onclick="scanIP()" id="scanBtn">Execute Scan</button>
+        <div id="results" style="display: none;">
+            <div class="data-grid">
+                <div class="data-box" id="geoData"></div>
+                <div class="data-box threat-box" id="threatData"></div>
             </div>
-
-            <div id="results" style="display: none;">
-                <div class="data-grid">
-                    <div class="data-box" id="geoData"></div>
-                    <div class="data-box threat-box" id="threatData"></div>
-                </div>
-                <div id="map"></div>
-            </div>
+            <div id="map"></div>
         </div>
     </div>
 
     <script>
-        // --- BOOT SEQUENCE LOGIC ---
-        const bootSequence = [
-            "Initializing Sentinel OS Kernel v4.0.2...",
-            "Loading cryptographic modules [OK]",
-            "Establishing secure uplink to global threat databases...",
-            "Bypassing local proxies [OK]",
-            "Allocating memory for geographic mapping engine...",
-            "Calibrating orbital sensors [OK]",
-            "WARNING: Unauthorized access will be logged and traced.",
-            "System boot complete. Handing over control to user."
-        ];
-
-        async function runBootSequence() {
-            const terminal = document.getElementById('terminal');
-            const bootScreen = document.getElementById('boot-screen');
-            const mainApp = document.getElementById('main-app');
-
-            // Type out each line with a slight delay
-            for (let i = 0; i < bootSequence.length; i++) {
-                const line = document.createElement('div');
-                line.className = 'terminal-line';
-                line.textContent = `> ${bootSequence[i]}`;
-                terminal.appendChild(line);
-                
-                // Fade in the line
-                setTimeout(() => line.style.opacity = '1', 50);
-                
-                // Wait between 200ms and 600ms before typing the next line
-                const delay = Math.random() * 400 + 200;
-                await new Promise(r => setTimeout(r, delay));
-            }
-
-            // Pause for cinematic effect
-            await new Promise(r => setTimeout(r, 800));
-
-            // Fade out the boot screen
-            bootScreen.style.opacity = '0';
-            
-            setTimeout(() => {
-                // Remove boot screen from document flow
-                bootScreen.style.display = 'none';
-                
-                // Show and animate in the main app
-                mainApp.style.display = 'block';
-                setTimeout(() => {
-                    mainApp.style.opacity = '1';
-                    mainApp.style.transform = 'scale(1)';
-                }, 50);
-            }, 1000); // Wait for the 1s CSS fade transition
-        }
-
-        // Run the boot sequence immediately when the page loads
-        window.onload = runBootSequence;
-
-
-        // --- IP TRACKER LOGIC (Same as before) ---
         let ipMap = null;
         let mapMarker = null;
 
@@ -258,6 +222,7 @@
                         `<span class="highlight-red">RISK SCORE:</span> ${data.threat_intel.score}% <br>
                          <span class="highlight-red">STATUS:</span> ${data.threat_intel.status}`;
 
+                    // Show and render map
                     document.getElementById('map').style.display = 'block';
                     if (!ipMap) {
                         ipMap = L.map('map').setView([data.geo.lat, data.geo.lon], 10);
